@@ -23,15 +23,12 @@ public class DispatcherServlet extends HttpServlet {
 		log.debug("request = {}", req.getRequestURI());
 
 		Controller controller = RequestMapping.getController(req.getRequestURI());
+		if(controller == null){
+			throw new NullPointerException();
+		}
+		
 		try {
-			String forwardUrl = controller.excute(req, resp);
-			if(forwardUrl.startsWith("redirect:")){
-				resp.sendRedirect(forwardUrl.replace("redirect:", ""));
-				return;
-			}
-			
-			forward(forwardUrl, req, resp);
-			
+			forward(controller.excute(req, resp), req, resp);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -39,6 +36,11 @@ public class DispatcherServlet extends HttpServlet {
 
 	private void forward(String forwardUrl, HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		if(forwardUrl.startsWith("redirect:")){
+			resp.sendRedirect(forwardUrl.replace("redirect:", ""));
+			return;
+		}
+		
 		RequestDispatcher rd = req.getRequestDispatcher(forwardUrl);
 		rd.forward(req, resp);
 	}
