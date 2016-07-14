@@ -31,19 +31,22 @@ public class UserDao {
 	}
 
 	public void update(User user) throws SQLException {
-		UpdateJdbcTemplate template = new UpdateJdbcTemplate();
-		template.update(user, this);
-	}
-
-	void setValuesForUpdate(User user, PreparedStatement pstmt) throws SQLException {
-		pstmt.setString(1, user.getPassword());
-		pstmt.setString(2, user.getName());
-		pstmt.setString(3, user.getEmail());
-		pstmt.setString(4, user.getUserId());
-	}
-
-	String createQueryForUpdate() {
-		return "UPDATE USERS SET password = ?, name = ?, email = ? WHERE userId = ? ";
+		UpdateJdbcTemplate template = new UpdateJdbcTemplate() {
+			
+			@Override
+			public void setValuesForUpdate(User user, PreparedStatement pstmt) throws SQLException {
+				pstmt.setString(1, user.getPassword());
+				pstmt.setString(2, user.getName());
+				pstmt.setString(3, user.getEmail());
+				pstmt.setString(4, user.getUserId());
+			}
+			
+			@Override
+			public String createQueryForUpdate() {
+				return "UPDATE USERS SET password = ?, name = ?, email = ? WHERE userId = ? ";
+			}
+		};
+		template.update(user);
 	}
 
 	public List<User> findAll() throws SQLException {

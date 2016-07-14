@@ -7,15 +7,15 @@ import java.sql.SQLException;
 import core.jdbc.ConnectionManager;
 import next.model.User;
 
-public class UpdateJdbcTemplate {
-	public void update(User user, UserDao userDao) throws SQLException {
+public abstract class UpdateJdbcTemplate {
+	public void update(User user) throws SQLException {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		try {
 			con = ConnectionManager.getConnection();
-			String sql = userDao.createQueryForUpdate();
+			String sql = createQueryForUpdate();
 			pstmt = con.prepareStatement(sql);
-			userDao.setValuesForUpdate(user, pstmt);
+			setValuesForUpdate(user, pstmt);
 
 			pstmt.execute();
 		} finally {
@@ -28,4 +28,8 @@ public class UpdateJdbcTemplate {
 			}
 		}
 	}
+	
+	public abstract void setValuesForUpdate(User user, PreparedStatement pstmt) throws SQLException;
+
+	public abstract String createQueryForUpdate();
 }
