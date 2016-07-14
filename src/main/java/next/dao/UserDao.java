@@ -40,65 +40,36 @@ public class UserDao {
 	}
 
 	public List<User> findAll() throws SQLException {
-		ArrayList<User> userList = new ArrayList<>();
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			con = ConnectionManager.getConnection();
-			String sql = "SELECT * FROM USERS";
-			pstmt = con.prepareStatement(sql);
-			rs = pstmt.executeQuery();
-
-			while (rs.next()) {
-				User user = new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
+		SelectJdbcTemplate template = new SelectJdbcTemplate() {
+			
+			@Override
+			public void setValues(PreparedStatement pstmt) throws SQLException {
+			}
+			
+			@Override
+			public Object mapRow(ResultSet rs) throws SQLException {
+				return new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
 						rs.getString("email"));
-				userList.add(user);
 			}
-
-		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (pstmt != null) {
-				pstmt.close();
-			}
-			if (con != null) {
-				con.close();
-			}
-		}
-		return userList;
+		};
+		
+		return (List<User>) template.query("SELECT userId, password, name, email FROM USERS");
 	}
 
 	public User findByUserId(String userId) throws SQLException {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			con = ConnectionManager.getConnection();
-			String sql = "SELECT userId, password, name, email FROM USERS WHERE userid=?";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, userId);
-
-			rs = pstmt.executeQuery();
-
-			User user = null;
-			if (rs.next()) {
-				user = new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
+		SelectJdbcTemplate template = new SelectJdbcTemplate() {
+			
+			@Override
+			public void setValues(PreparedStatement pstmt) throws SQLException {
+				pstmt.setString(1, userId);
+			}
+			
+			@Override
+			public Object mapRow(ResultSet rs) throws SQLException {
+				return new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
 						rs.getString("email"));
 			}
-
-			return user;
-		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (pstmt != null) {
-				pstmt.close();
-			}
-			if (con != null) {
-				con.close();
-			}
-		}
-	}
-}
+		};
+		
+		return (User) template.queryForObject("SELECT userId, password, name, email FROM USERS WHERE userid=?");
+	}}
