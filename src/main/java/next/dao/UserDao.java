@@ -12,10 +12,10 @@ import next.model.User;
 
 public class UserDao {
 	public void insert(User user) throws SQLException {
-		InsertJdbcTemplate template = new InsertJdbcTemplate() {
+		JdbcTemplate template = new JdbcTemplate() {
 
 			@Override
-			public void setValuesForInsert(User user, PreparedStatement pstmt) throws SQLException {
+			public void setValues(User user, PreparedStatement pstmt) throws SQLException {
 				pstmt.setString(1, user.getUserId());
 				pstmt.setString(2, user.getPassword());
 				pstmt.setString(3, user.getName());
@@ -23,26 +23,26 @@ public class UserDao {
 			}
 
 			@Override
-			public String createQueryForInsert() {
+			public String createQuery() {
 				return "INSERT INTO USERS VALUES (?, ?, ?, ?)";
 			}
 		};
-		template.insert(user);
+		template.update(user);
 	}
 
 	public void update(User user) throws SQLException {
-		UpdateJdbcTemplate template = new UpdateJdbcTemplate() {
-			
+		JdbcTemplate template = new JdbcTemplate() {
+
 			@Override
-			public void setValuesForUpdate(User user, PreparedStatement pstmt) throws SQLException {
+			public void setValues(User user, PreparedStatement pstmt) throws SQLException {
 				pstmt.setString(1, user.getPassword());
 				pstmt.setString(2, user.getName());
 				pstmt.setString(3, user.getEmail());
 				pstmt.setString(4, user.getUserId());
 			}
-			
+
 			@Override
-			public String createQueryForUpdate() {
+			public String createQuery() {
 				return "UPDATE USERS SET password = ?, name = ?, email = ? WHERE userId = ? ";
 			}
 		};
