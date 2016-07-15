@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import core.jdbc.ConnectionManager;
+import next.model.User;
 
 public abstract class JdbcTemplate {
 	public void update(String sql, PreparedStatementSetter pstmtSetter) throws DataAccessException {
@@ -19,16 +20,17 @@ public abstract class JdbcTemplate {
 		}
 	}
 
-	public List<?> query(String sql, RowMapper rowMapper) throws DataAccessException {
+	public <T> List<T> query(String sql, RowMapper<T> rowMapper, PreparedStatementSetter pstmtSetter)
+			throws DataAccessException {
 		ResultSet rs = null;
 
 		try (Connection con = ConnectionManager.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql)) {
+			pstmtSetter.setValues(pstmt);
 			rs = pstmt.executeQuery();
 
-			ArrayList<Object> list = new ArrayList<>();
+			List<T> list = new ArrayList<T>();
 			while (rs.next()) {
-				Object obj = rowMapper.mapRow(rs);
-				list.add(obj);
+				list.add(rowMapper.mapRow(rs));
 			}
 			return list;
 
@@ -45,30 +47,32 @@ public abstract class JdbcTemplate {
 		}
 	}
 
-	public Object queryForObject(String sql, PreparedStatementSetter pstmtSetter, RowMapper rowMapper)
+	public <T> T queryForObject(String sql, RowMapper<T> rm, Object... parameters) {
+		return queryForObject(sql, rm, createPreparedStatementSetter(parameters));
+	}
+	
+	public <T> T queryForObject(String sql, RowMapper<T> rowMapper, PreparedStatementSetter pstmtSetter)
 			throws DataAccessException {
-		ResultSet rs = null;
+		List<T> list = query(sql, rowMapper, pstmtSetter);
+		if(list.isEmpty()){
+			return null;
+		}
+		return list.get(0);
+	}
 
-		try (Connection con = ConnectionManager.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
-			pstmtSetter.setValues(pstmt);
-			rs = pstmt.executeQuery();
+	public <T> List<T> query(String sql, RowMapper<T> rowMapper, Object... parameters) {
+		return query(sql, rowMapper, createPreparedStatementSetter(parameters));
+	}
 
-			Object obj = null;
-			if (rs.next()) {
-				obj = rowMapper.mapRow(rs);
-			}
+	private PreparedStatementSetter createPreparedStatementSetter(Object... parameters) {
+		return new PreparedStatementSetter() {
 
-			return obj;
-		} catch (SQLException e) {
-			throw new DataAccessException();
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException e) {
-					throw new DataAccessException();
+			@Override
+			public void setValues(PreparedStatement pstmt) throws SQLException {
+				for (int i = 0; i < parameters.length; i++) {
+					pstmt.setObject(i + 1, parameters[i]);
 				}
 			}
-		}
+		};
 	}
 }

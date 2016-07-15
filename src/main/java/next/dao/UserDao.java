@@ -43,10 +43,10 @@ public class UserDao {
 		JdbcTemplate template = new JdbcTemplate() {
 		};
 
-		return (List<User>) template.query("SELECT userId, password, name, email FROM USERS", new RowMapper() {
+		return template.query("SELECT userId, password, name, email FROM USERS", new RowMapper<User>() {
 
 			@Override
-			public Object mapRow(ResultSet rs) throws SQLException {
+			public User mapRow(ResultSet rs) throws SQLException {
 				return new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
 						rs.getString("email"));
 			}
@@ -57,19 +57,19 @@ public class UserDao {
 		JdbcTemplate template = new JdbcTemplate() {
 		};
 
-		return (User) template.queryForObject("SELECT userId, password, name, email FROM USERS WHERE userid=?",
-				new PreparedStatementSetter() {
+		return template.queryForObject("SELECT userId, password, name, email FROM USERS WHERE userid=?",
+				new RowMapper<User>() {
+
+					@Override
+					public User mapRow(ResultSet rs) throws SQLException {
+						return new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
+								rs.getString("email"));
+					}
+				}, new PreparedStatementSetter() {
 
 					@Override
 					public void setValues(PreparedStatement pstmt) throws SQLException {
 						pstmt.setString(1, userId);
-					}
-				}, new RowMapper() {
-
-					@Override
-					public Object mapRow(ResultSet rs) throws SQLException {
-						return new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
-								rs.getString("email"));
 					}
 				});
 	}
