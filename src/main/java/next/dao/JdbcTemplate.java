@@ -10,64 +10,47 @@ import java.util.List;
 import core.jdbc.ConnectionManager;
 
 public abstract class JdbcTemplate {
-	public void update(String sql, PreparedStatementSetter pstmtSetter) throws SQLException {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		try {
-			con = ConnectionManager.getConnection();
-			pstmt = con.prepareStatement(sql);
+	public void update(String sql, PreparedStatementSetter pstmtSetter) throws DataAccessException {
+		try (Connection con = ConnectionManager.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql)) {
 			pstmtSetter.setValues(pstmt);
-
 			pstmt.execute();
-		} finally {
-			if (pstmt != null) {
-				pstmt.close();
-			}
-
-			if (con != null) {
-				con.close();
-			}
+		} catch (SQLException e) {
+			throw new DataAccessException();
 		}
 	}
-	
-	public List<?> query(String sql, RowMapper rowMapper) throws SQLException {
-		Connection con = null;
-		PreparedStatement pstmt = null;
+
+	public List<?> query(String sql, RowMapper rowMapper) throws DataAccessException {
 		ResultSet rs = null;
-		try {
-			con = ConnectionManager.getConnection();
-			pstmt = con.prepareStatement(sql);
+
+		try (Connection con = ConnectionManager.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql)) {
 			rs = pstmt.executeQuery();
-			
+
 			ArrayList<Object> list = new ArrayList<>();
 			while (rs.next()) {
 				Object obj = rowMapper.mapRow(rs);
 				list.add(obj);
 			}
 			return list;
-			
+
+		} catch (SQLException e) {
+			throw new DataAccessException();
 		} finally {
 			if (rs != null) {
-				rs.close();
-			}
-			if (pstmt != null) {
-				pstmt.close();
-			}
-			if (con != null) {
-				con.close();
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					throw new DataAccessException();
+				}
 			}
 		}
 	}
 
-	public Object queryForObject(String sql, PreparedStatementSetter pstmtSetter, RowMapper rowMapper) throws SQLException {
-		Connection con = null;
-		PreparedStatement pstmt = null;
+	public Object queryForObject(String sql, PreparedStatementSetter pstmtSetter, RowMapper rowMapper)
+			throws DataAccessException {
 		ResultSet rs = null;
-		try {
-			con = ConnectionManager.getConnection();
-			pstmt = con.prepareStatement(sql);
-			pstmtSetter.setValues(pstmt);
 
+		try (Connection con = ConnectionManager.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+			pstmtSetter.setValues(pstmt);
 			rs = pstmt.executeQuery();
 
 			Object obj = null;
@@ -76,15 +59,15 @@ public abstract class JdbcTemplate {
 			}
 
 			return obj;
+		} catch (SQLException e) {
+			throw new DataAccessException();
 		} finally {
 			if (rs != null) {
-				rs.close();
-			}
-			if (pstmt != null) {
-				pstmt.close();
-			}
-			if (con != null) {
-				con.close();
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					throw new DataAccessException();
+				}
 			}
 		}
 	}
