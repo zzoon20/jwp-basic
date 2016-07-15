@@ -30,7 +30,7 @@ public abstract class JdbcTemplate {
 		}
 	}
 	
-	public List<?> query(String sql) throws SQLException {
+	public List<?> query(String sql, RowMapper rowMapper) throws SQLException {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -41,7 +41,7 @@ public abstract class JdbcTemplate {
 			
 			ArrayList<Object> list = new ArrayList<>();
 			while (rs.next()) {
-				Object obj = mapRow(rs);
+				Object obj = rowMapper.mapRow(rs);
 				list.add(obj);
 			}
 			return list;
@@ -59,9 +59,7 @@ public abstract class JdbcTemplate {
 		}
 	}
 
-	public abstract Object mapRow(ResultSet rs) throws SQLException;
-
-	public Object queryForObject(String sql) throws SQLException {
+	public Object queryForObject(String sql, RowMapper rowMapper) throws SQLException {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -74,7 +72,7 @@ public abstract class JdbcTemplate {
 
 			Object obj = null;
 			if (rs.next()) {
-				obj = mapRow(rs);
+				obj = rowMapper.mapRow(rs);
 			}
 
 			return obj;

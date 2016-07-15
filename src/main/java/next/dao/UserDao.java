@@ -18,11 +18,6 @@ public class UserDao {
 				pstmt.setString(3, user.getName());
 				pstmt.setString(4, user.getEmail());
 			}
-
-			@Override
-			public Object mapRow(ResultSet rs) throws SQLException {
-				return null;
-			}
 		};
 		template.update("INSERT INTO USERS VALUES (?, ?, ?, ?)");
 	}
@@ -37,11 +32,6 @@ public class UserDao {
 				pstmt.setString(3, user.getEmail());
 				pstmt.setString(4, user.getUserId());
 			}
-
-			@Override
-			public Object mapRow(ResultSet rs) throws SQLException {
-				return null;
-			}
 		};
 		template.update("UPDATE USERS SET password = ?, name = ?, email = ? WHERE userId = ? ");
 	}
@@ -52,15 +42,16 @@ public class UserDao {
 			@Override
 			public void setValues(PreparedStatement pstmt) throws SQLException {
 			}
+		};
+		
+		return (List<User>) template.query("SELECT userId, password, name, email FROM USERS", new RowMapper() {
 			
 			@Override
 			public Object mapRow(ResultSet rs) throws SQLException {
 				return new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
 						rs.getString("email"));
 			}
-		};
-		
-		return (List<User>) template.query("SELECT userId, password, name, email FROM USERS");
+		});
 	}
 
 	public User findByUserId(String userId) throws SQLException {
@@ -70,13 +61,14 @@ public class UserDao {
 			public void setValues(PreparedStatement pstmt) throws SQLException {
 				pstmt.setString(1, userId);
 			}
+		};
+		
+		return (User) template.queryForObject("SELECT userId, password, name, email FROM USERS WHERE userid=?", new RowMapper() {
 			
 			@Override
 			public Object mapRow(ResultSet rs) throws SQLException {
 				return new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
 						rs.getString("email"));
 			}
-		};
-		
-		return (User) template.queryForObject("SELECT userId, password, name, email FROM USERS WHERE userid=?");
+		});
 	}}
