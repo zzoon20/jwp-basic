@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import core.jdbc.ConnectionManager;
-import next.model.User;
 
 public abstract class JdbcTemplate {
 	public void update(String sql, PreparedStatementSetter pstmtSetter) throws DataAccessException {
