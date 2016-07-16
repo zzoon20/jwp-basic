@@ -1,7 +1,6 @@
 package next.dao;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -43,29 +42,18 @@ public class UserDao {
 		JdbcTemplate template = new JdbcTemplate() {
 		};
 
-		return template.query("SELECT userId, password, name, email FROM USERS", new RowMapper<User>() {
-
-			@Override
-			public User mapRow(ResultSet rs) throws SQLException {
-				return new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
-						rs.getString("email"));
-			}
-		});
+		return template.query("SELECT userId, password, name, email FROM USERS", rs -> new User(rs.getString("userId"),
+				rs.getString("password"), rs.getString("name"), rs.getString("email")));
 	}
 
 	public User findByUserId(String userId) throws SQLException {
 		JdbcTemplate template = new JdbcTemplate() {
 		};
 
-		return template.queryForObject("SELECT userId, password, name, email FROM USERS WHERE userid=?",
-				new RowMapper<User>() {
-
-					@Override
-					public User mapRow(ResultSet rs) throws SQLException {
-						return new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
-								rs.getString("email"));
-					}
-				}, new PreparedStatementSetter() {
+		return template.queryForObject(
+				"SELECT userId, password, name, email FROM USERS WHERE userid=?", rs -> new User(rs.getString("userId"),
+						rs.getString("password"), rs.getString("name"), rs.getString("email")),
+				new PreparedStatementSetter() {
 
 					@Override
 					public void setValues(PreparedStatement pstmt) throws SQLException {
