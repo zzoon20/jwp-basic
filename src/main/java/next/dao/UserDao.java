@@ -1,26 +1,25 @@
 package next.dao;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import next.model.User;
 
 public class UserDao {
-	public void insert(User user) throws SQLException {
+	public void insert(User user) {
 		JdbcTemplate template = new JdbcTemplate() {
 		};
 		template.update("INSERT INTO USERS VALUES (?, ?, ?, ?)", user.getUserId(), user.getPassword(), user.getName(),
 				user.getEmail());
 	}
 
-	public void update(User user) throws SQLException {
+	public void update(User user) {
 		JdbcTemplate template = new JdbcTemplate() {
 		};
 		template.update("UPDATE USERS SET password = ?, name = ?, email = ? WHERE userId = ? ", user.getPassword(),
 				user.getName(), user.getEmail(), user.getUserId());
 	}
 
-	public List<User> findAll() throws SQLException {
+	public List<User> findAll() {
 		JdbcTemplate template = new JdbcTemplate() {
 		};
 
@@ -28,7 +27,7 @@ public class UserDao {
 				rs.getString("password"), rs.getString("name"), rs.getString("email")));
 	}
 
-	public User findByUserId(String userId) throws SQLException {
+	public User findByUserId(String userId) {
 		JdbcTemplate template = new JdbcTemplate() {
 		};
 
