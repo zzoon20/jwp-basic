@@ -18,6 +18,10 @@ public abstract class JdbcTemplate {
 			throw new DataAccessException();
 		}
 	}
+	
+	public void update(String sql, Object...parameters){
+		update(sql, createPreparedStatementSetter(parameters));
+	}
 
 	public <T> List<T> query(String sql, RowMapper<T> rowMapper, PreparedStatementSetter pstmtSetter)
 			throws DataAccessException {
