@@ -2,6 +2,7 @@ package next.dao;
 
 import java.util.List;
 
+import core.jdbc.JdbcTemplate;
 import next.model.User;
 
 public class UserDao {
