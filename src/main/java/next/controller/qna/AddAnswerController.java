@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import core.mvc.Controller;
 import core.mvc.JsonView;
-import core.mvc.View;
+import core.mvc.ModelAndView;
 import next.dao.AnswerDao;
 import next.model.Answer;
 
@@ -16,7 +16,7 @@ public class AddAnswerController implements Controller {
 	private static final Logger log = LoggerFactory.getLogger(AddAnswerController.class);
 
 	@Override
-	public View execute(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	public ModelAndView execute(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		Answer answer = new Answer(req.getParameter("writer"), 
 				req.getParameter("contents"), 
 				Long.parseLong(req.getParameter("questionId")));
@@ -25,7 +25,8 @@ public class AddAnswerController implements Controller {
 		AnswerDao answerDao = new AnswerDao();
 		Answer savedAnswer = answerDao.insert(answer);
 		
-		req.setAttribute("savedAnswer", savedAnswer);
-		return new JsonView();
+		ModelAndView mv = new ModelAndView(new JsonView());
+		mv.addModel("savedAnswer", savedAnswer);
+		return mv;
 	}
 }
