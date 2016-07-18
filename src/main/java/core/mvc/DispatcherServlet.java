@@ -31,9 +31,9 @@ public class DispatcherServlet extends HttpServlet {
 
 		Controller controller = rm.findController(requestUri);
 		try {
-			View view = controller.execute(req, resp);
-			if (view != null) {
-				view.render(req, resp);
+			ModelAndView mv = controller.execute(req, resp);
+			if (mv != null) {
+				mv.getView().render(mv.getModel(), req, resp);
 			}
 		} catch (Throwable e) {
 			logger.error("Exception : {}", e);
