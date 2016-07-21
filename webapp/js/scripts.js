@@ -1,5 +1,6 @@
 // $(".qna-comment").on("click", ".answerWrite input[type=submit]", addAnswer);
 $(".answerWrite input[type=submit]").click(addAnswer);
+$(".link-delete-article").click(deleteAnswer);
 
 function addAnswer(e) {
   e.preventDefault();
@@ -28,6 +29,22 @@ function onSuccess(json, status){
 
 function onError(xhr, status) {
   alert("error");
+}
+
+function deleteAnswer(e) {
+  e.preventDefault();
+  var queryString = $("form[name=answerDelete]").serialize();
+console.log(e);
+  $.ajax({
+    type : 'post',
+    url : '/api/qna/deleteAnswer',
+    data : queryString,
+    dataType : 'json',
+    error: onError,
+    success : function(){
+    	//$("#article"+json.answer.answerId).remove();
+    },
+  });
 }
 
 String.prototype.format = function() {
