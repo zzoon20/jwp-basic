@@ -2,11 +2,13 @@ package next.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 
-import next.model.Question;
 import core.jdbc.JdbcTemplate;
+import core.jdbc.KeyHolder;
 import core.jdbc.RowMapper;
+import next.model.Question;
 
 public class QuestionDao {
 	public List<Question> findAll() {
@@ -45,5 +47,12 @@ public class QuestionDao {
 		};
 		
 		return jdbcTemplate.queryForObject(sql, rm, questionId);
+	}
+	
+	public void insert(Question question){
+		JdbcTemplate jdbcTemplate = new JdbcTemplate();
+		String sql = "INSERT INTO QUESTIONS(writer, title, contents, createdDate, countOfAnswer) values(?, ?, ?, ?, ?)";
+		jdbcTemplate.update(sql, question.getWriter(), question.getTitle(), question.getContents(),
+				new Timestamp(question.getTimeFromCreateDate()), question.getCountOfComment());
 	}
 }
