@@ -55,4 +55,10 @@ public class QuestionDao {
 		jdbcTemplate.update(sql, question.getWriter(), question.getTitle(), question.getContents(),
 				new Timestamp(question.getTimeFromCreateDate()), question.getCountOfComment());
 	}
+	
+	public void increaseCountOfAnswer(long questionId){
+		JdbcTemplate jdbcTemplate = new JdbcTemplate();
+		String sql = "UPDATE QUESTIONS SET countOfAnswer = countOfAnswer + 1 where questionId = ?";
+		jdbcTemplate.update(sql, questionId);
+	}
 }
