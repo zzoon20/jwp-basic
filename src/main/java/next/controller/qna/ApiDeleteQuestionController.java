@@ -11,8 +11,9 @@ import next.dao.AnswerDao;
 import next.dao.QuestionDao;
 import next.model.Answer;
 import next.model.Question;
+import next.model.Result;
 
-public class DeleteQuestionController extends AbstractController {
+public class ApiDeleteQuestionController extends AbstractController {
 
 	@Override
 	public ModelAndView execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -23,7 +24,10 @@ public class DeleteQuestionController extends AbstractController {
 		if (isDeletable(question)) {
 			qd.delete(questionId);
 		}
-		return jspView("redirect:/");
+		
+		ModelAndView mav = jsonView();
+		mav.addObject("result", Result.ok());
+		return mav;
 	}
 
 	private boolean isDeletable(Question question) {
