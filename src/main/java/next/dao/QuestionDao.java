@@ -6,7 +6,6 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import core.jdbc.JdbcTemplate;
-import core.jdbc.KeyHolder;
 import core.jdbc.RowMapper;
 import next.model.Question;
 
@@ -60,5 +59,11 @@ public class QuestionDao {
 		JdbcTemplate jdbcTemplate = JdbcTemplate.getInstance();
 		String sql = "UPDATE QUESTIONS SET countOfAnswer = countOfAnswer + 1 where questionId = ?";
 		jdbcTemplate.update(sql, questionId);
+	}
+	
+	public void delete(long questionId) {
+		JdbcTemplate jdbcTemplate = JdbcTemplate.getInstance();
+        String sql = "DELETE FROM QUESTIONS WHERE questionId = ?";
+        jdbcTemplate.update(sql, questionId);
 	}
 }
