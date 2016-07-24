@@ -9,12 +9,14 @@ import org.slf4j.LoggerFactory;
 import core.mvc.AbstractController;
 import core.mvc.ModelAndView;
 import next.dao.AnswerDao;
+import next.dao.QuestionDao;
 import next.model.Answer;
 
 public class AddAnswerController extends AbstractController {
 	private static final Logger log = LoggerFactory.getLogger(AddAnswerController.class);
 
 	private AnswerDao answerDao = new AnswerDao();
+	private QuestionDao questionDao = new QuestionDao();
 
 	@Override
 	public ModelAndView execute(HttpServletRequest req, HttpServletResponse response) throws Exception {
@@ -24,6 +26,7 @@ public class AddAnswerController extends AbstractController {
 		log.debug("answer : {}", answer);
 		
 		Answer savedAnswer = answerDao.insert(answer);
+		questionDao.increaseCountOfAnswer(Long.parseLong(req.getParameter("questionId")));
 		return jsonView().addObject("answer", savedAnswer);
 	}
 }
