@@ -18,7 +18,8 @@ public class AnnotationHandlerMapping {
 	}
 	
 	public void initialize() {
-		
+		ControllerScanner ctrlScanner = new ControllerScanner();
+		Map<Class<?>, Object> ctrlMap = ctrlScanner.getControllers(basePackage);
 	}
 	
 	public HandlerExecution getHandler(HttpServletRequest request) {
