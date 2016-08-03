@@ -5,6 +5,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import core.annotation.Controller;
+import core.annotation.RequestMapping;
+import core.annotation.RequestMethod;
 import core.mvc.AbstractController;
 import core.mvc.ModelAndView;
 import next.dao.AnswerDao;
@@ -12,10 +15,12 @@ import next.dao.QuestionDao;
 import next.model.Answer;
 import next.model.Question;
 
+@Controller
 public class ShowQuestionController extends AbstractController {
 	private QuestionDao questionDao = QuestionDao.getInstance();
 	private AnswerDao answerDao = AnswerDao.getInstance();
 	
+	@RequestMapping(value="/qna/show", method=RequestMethod.GET)
 	@Override
 	public ModelAndView execute(HttpServletRequest req, HttpServletResponse response) throws Exception {
 		long questionId = Long.parseLong(req.getParameter("questionId"));

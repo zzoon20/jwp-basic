@@ -40,7 +40,7 @@ public class RequestMapping {
 	    mappings.put("/users/create", new CreateUserController());
 	    mappings.put("/users/updateForm", new UpdateFormUserController());
 	    mappings.put("/users/update", new UpdateUserController());
-		mappings.put("/qna/show", new ShowQuestionController());
+		//mappings.put("/qna/show", new ShowQuestionController());
 		mappings.put("/qna/form", new CreateFormQuestionController());
 		mappings.put("/qna/create", new CreateQuestionController());
 		mappings.put("/qna/updateForm", new UpdateFormQuestionController());
