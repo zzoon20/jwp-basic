@@ -3,15 +3,19 @@ package next.controller.qna;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import core.annotation.Controller;
+import core.annotation.Inject;
 import core.jdbc.DataAccessException;
 import core.mvc.AbstractController;
 import core.mvc.ModelAndView;
 import next.dao.AnswerDao;
 import next.model.Result;
 
+@Controller
 public class DeleteAnswerController extends AbstractController {
 	private AnswerDao answerDao;
 
+    @Inject
 	public DeleteAnswerController(AnswerDao answerDao) {
 		this.answerDao = answerDao;
 	}

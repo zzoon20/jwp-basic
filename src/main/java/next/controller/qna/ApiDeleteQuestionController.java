@@ -3,6 +3,8 @@ package next.controller.qna;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import core.annotation.Controller;
+import core.annotation.Inject;
 import core.mvc.AbstractController;
 import core.mvc.ModelAndView;
 import next.CannotDeleteException;
@@ -10,9 +12,11 @@ import next.controller.UserSessionUtils;
 import next.model.Result;
 import next.service.QnaService;
 
+@Controller
 public class ApiDeleteQuestionController extends AbstractController {
 	private QnaService qnaService;
-	
+
+    @Inject
 	public ApiDeleteQuestionController(QnaService qnaService) {
 		this.qnaService = qnaService;
 	}

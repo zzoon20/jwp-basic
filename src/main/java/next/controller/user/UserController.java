@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import core.annotation.Controller;
+import core.annotation.Inject;
 import core.annotation.RequestMapping;
 import core.annotation.RequestMethod;
 import core.mvc.ModelAndView;
@@ -21,6 +22,7 @@ import core.nmvc.AbstractNewController;
 public class UserController extends AbstractNewController {
 	private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
+    @Inject
     private UserDao userDao = UserDao.getInstance();
 	
     @RequestMapping("/users")

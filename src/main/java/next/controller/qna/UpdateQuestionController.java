@@ -3,15 +3,19 @@ package next.controller.qna;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import core.annotation.Controller;
+import core.annotation.Inject;
 import core.mvc.AbstractController;
 import core.mvc.ModelAndView;
 import next.controller.UserSessionUtils;
 import next.dao.QuestionDao;
 import next.model.Question;
 
+@Controller
 public class UpdateQuestionController extends AbstractController {
     private QuestionDao questionDao;
 
+    @Inject
     public UpdateQuestionController(QuestionDao questionDao) {
     	this.questionDao = questionDao;
     }

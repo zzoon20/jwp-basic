@@ -5,9 +5,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 import next.model.User;
+import core.annotation.Repository;
 import core.jdbc.JdbcTemplate;
 import core.jdbc.RowMapper;
 
+@Repository
 public class UserDao {
 	private static UserDao userDao;
 	private JdbcTemplate jdbcTemplate = JdbcTemplate.getInstance();

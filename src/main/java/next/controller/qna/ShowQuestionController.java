@@ -5,6 +5,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import core.annotation.Controller;
+import core.annotation.Inject;
 import core.mvc.AbstractController;
 import core.mvc.ModelAndView;
 import next.dao.AnswerDao;
@@ -12,10 +14,12 @@ import next.dao.QuestionDao;
 import next.model.Answer;
 import next.model.Question;
 
+@Controller
 public class ShowQuestionController extends AbstractController {
     private QuestionDao questionDao;
     private AnswerDao answerDao;
 
+    @Inject
     public ShowQuestionController(QuestionDao questionDao, AnswerDao answerDao) {
     	this.questionDao = questionDao;
     	this.answerDao = answerDao;
