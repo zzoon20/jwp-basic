@@ -1,12 +1,15 @@
 package core.di.factory;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class BeanFactory {
@@ -35,10 +38,25 @@ public class BeanFactory {
 	}
 
 	private Object instantiateClass(Class<?> clazz) {
-		return null;
+		Constructor<?> constructor = BeanFactoryUtils.getInjectedConstructor(clazz);
+		if(constructor!=null){
+			return instantiateConstructor(constructor);
+		}
+		return BeanUtils.instantiate(BeanFactoryUtils.findConcreteClass(clazz, preInstanticateBeans));
 	}
 
 	private Object instantiateConstructor(Constructor<?> constructor) {
-		return null;
+		Class<?>[] parameterTypes = constructor.getParameterTypes();
+		List<Object> args = Lists.newArrayList();
+		for (Class<?> clazz : parameterTypes) {
+			Object bean = getBean(clazz);
+			if (bean == null){
+				Class<?> concreteClass = BeanFactoryUtils.findConcreteClass(clazz, preInstanticateBeans);
+				logger.debug("concreteClass = {}", concreteClass.getName());
+				bean = instantiateClass(concreteClass);
+			}
+			args.add(bean);
+		}
+		return BeanUtils.instantiateClass(constructor, args.toArray());
 	}
 }
