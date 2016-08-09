@@ -22,8 +22,12 @@ import core.nmvc.AbstractNewController;
 public class UserController extends AbstractNewController {
 	private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
+    private UserDao userDao;
+    
     @Inject
-    private UserDao userDao = UserDao.getInstance();
+    public UserController(UserDao userDao) {
+    	this.userDao = userDao;
+	}
 	
     @RequestMapping("/users")
     public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws Exception {
