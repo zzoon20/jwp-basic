@@ -1,5 +1,6 @@
 package core.di.factory;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,8 @@ import org.springframework.beans.BeanUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import core.annotation.Controller;
 
 public class BeanFactory {
 	private static final Logger logger = LoggerFactory.getLogger(BeanFactory.class);
@@ -52,11 +55,22 @@ public class BeanFactory {
 			Object bean = getBean(clazz);
 			if (bean == null){
 				Class<?> concreteClass = BeanFactoryUtils.findConcreteClass(clazz, preInstanticateBeans);
-				logger.debug("concreteClass = {}", concreteClass.getName());
 				bean = instantiateClass(concreteClass);
 			}
 			args.add(bean);
 		}
 		return BeanUtils.instantiateClass(constructor, args.toArray());
+	}
+	
+	public Map<Class<?>, Object> getControllers(){
+		Map<Class<?>, Object> beanMap = Maps.newHashMap();
+		for (Class<?> clazz : beans.keySet()) {
+			Annotation annotation = clazz.getAnnotation(Controller.class);
+			if(annotation != null){
+				logger.debug("Controller class : {}", clazz.getName());
+				beanMap.put(clazz, beans.get(clazz));
+			}
+		}
+		return beanMap;
 	}
 }
