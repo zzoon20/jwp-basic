@@ -42,7 +42,6 @@ public class BeanFactory {
 
 		for (Class<?> clazz : preInstanticateBeans) {
 			if (beans.get(clazz) == null) {
-				logger.debug("instantiated Class : {}", clazz);
 				inject(clazz);
 			}
 		}
@@ -55,6 +54,7 @@ public class BeanFactory {
 	}
 
 	public void registerBean(Class<?> clazz, Object bean) {
+		logger.debug("class registered : {}", clazz.getName());
     	beans.put(clazz, bean);
     }
 
