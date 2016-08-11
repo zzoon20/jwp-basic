@@ -1,5 +1,6 @@
 package core.di.factory;
 
+import java.lang.reflect.Field;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -15,6 +16,20 @@ public class FieldInjector extends AbstractInjector {
 	@Override
 	public void inject(Class<?> clazz) {
 		instantiateClass(clazz);
+		Set<Field> injectedFiedls = BeanFactoryUtils.getInjectedFields(clazz);
+		for (Field field : injectedFiedls) {
+			Class<?> concreateClazz = BeanFactoryUtils.findConcreteClass(clazz, beanFactory.getPreInstanticateBeans());
+			Object bean = beanFactory.getBean(concreateClazz);
+			if(bean == null) {
+				bean = instantiateClass(concreateClazz);
+			}
+				try {
+					field.setAccessible(true);
+					field.set(beanFactory.getBean(field.getDeclaringClass()), bean);
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					logger.error(e.getMessage());
+				}
+		}
 	}
 
 	@Override
