@@ -36,10 +36,10 @@ public class BeanFactory {
 	}
 
 	public void initialize() {
-		injectors.add(new ConstructorInjector(this));
 		injectors.add(new FieldInjector());
 		injectors.add(new SetterInjector());
-
+		injectors.add(new ConstructorInjector(this));
+		
 		for (Class<?> clazz : preInstanticateBeans) {
 			if (beans.get(clazz) == null) {
 				inject(clazz);
