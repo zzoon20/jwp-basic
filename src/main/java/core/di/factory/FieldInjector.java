@@ -14,34 +14,24 @@ public class FieldInjector extends AbstractInjector {
 	}
 
 	@Override
-	public void inject(Class<?> clazz) {
-		instantiateClass(clazz);
-		Set<Field> injectedFiedls = BeanFactoryUtils.getInjectedFields(clazz);
-		for (Field field : injectedFiedls) {
-			Class<?> concreateClazz = BeanFactoryUtils.findConcreteClass(clazz, beanFactory.getPreInstanticateBeans());
-			Object bean = beanFactory.getBean(concreateClazz);
-			if(bean == null) {
-				bean = instantiateClass(concreateClazz);
-			}
-				try {
-					field.setAccessible(true);
-					field.set(beanFactory.getBean(field.getDeclaringClass()), bean);
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					logger.error(e.getMessage());
-				}
+	public Set<?> getInjectedBeans(Class<?> clazz) {
+		return BeanFactoryUtils.getInjectedFields(clazz);
+	}
+
+	@Override
+	public Class<?> getBeanClass(Object injectedBean) {
+		Field field = (Field)injectedBean;
+		return field.getType();
+	}
+	
+	@Override
+	public void inject(Object injectedBean, Object bean, BeanFactory beanFactory) {
+		Field field = (Field)injectedBean;
+		try {
+			field.setAccessible(true);
+			field.set(beanFactory.getBean(field.getDeclaringClass()), bean);
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			logger.error(e.getMessage());
 		}
 	}
-
-	@Override
-	public Set<?> getInjectedBeans(Class<?> clazz) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Class<?> getBeanClass(Object bean) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

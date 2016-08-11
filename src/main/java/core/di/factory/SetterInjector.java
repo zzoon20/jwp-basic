@@ -1,5 +1,7 @@
 package core.di.factory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -13,20 +15,30 @@ public class SetterInjector extends AbstractInjector {
 	}
 
 	@Override
-	public void inject(Class<?> clazz) {
-		instantiateClass(clazz);
-	}
-
-	@Override
 	public Set<?> getInjectedBeans(Class<?> clazz) {
-		// TODO Auto-generated method stub
-		return null;
+		return BeanFactoryUtils.getInjectedMethods(clazz);
 	}
 
 	@Override
-	public Class<?> getBeanClass(Object bean) {
-		// TODO Auto-generated method stub
-		return null;
+	public Class<?> getBeanClass(Object injectedBean) {
+		Method method = (Method)injectedBean;
+		
+		Class<?>[] paramTypes = method.getParameterTypes();
+		if (paramTypes.length != 1) {
+			throw new IllegalStateException("DI할 메소드 인자는 하나여야 합니다.");
+		}
+		
+		return paramTypes[0];
+	}
+	
+	@Override
+	public void inject(Object injectedBean, Object bean, BeanFactory beanFactory) {
+		Method method = (Method)injectedBean;
+		try {
+			method.invoke(beanFactory.getBean(method.getDeclaringClass()), bean);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			logger.error(e.getMessage());
+		}
 	}
 
 }

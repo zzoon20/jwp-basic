@@ -6,6 +6,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Sets;
+
 public class ConstructorInjector extends AbstractInjector {
 	private static final Logger logger = LoggerFactory.getLogger(ConstructorInjector.class);
 	
@@ -14,27 +16,16 @@ public class ConstructorInjector extends AbstractInjector {
 	}
 
 	@Override
-	public void inject(Class<?> clazz) {
-		Object bean = beanFactory.getBean(clazz);
-        if (bean != null) {
-        	return;
-        }
-        
-        Constructor<?> injectedConstructor = BeanFactoryUtils.getInjectedConstructor(clazz);
-        if (injectedConstructor != null) {
-        	logger.debug("Constructor : {}", injectedConstructor);
-            bean = instantiateConstructor(injectedConstructor);
-            beanFactory.registerBean(clazz, bean);
-        }
-	}
-	
-	@Override
 	public Set<?> getInjectedBeans(Class<?> clazz){
-		return null;
+		return Sets.newHashSet();
 	}
 	
 	@Override
-	public Class<?> getBeanClass(Object bean) {
+	public Class<?> getBeanClass(Object injectedBean) {
 		return null;
+	}
+
+	@Override
+	public void inject(Object injectedBean, Object bean, BeanFactory beanFactory) {
 	}
 }

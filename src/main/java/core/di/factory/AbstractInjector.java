@@ -18,29 +18,42 @@ public abstract class AbstractInjector implements Injector {
 		this.beanFactory = beanFactory;
 	}
 	
-	abstract public void inject(Class<?> clazz);
+	public void inject(Class<?> clazz) {
+		instantiateClass(clazz);
+		Set<?> injectedBeans = getInjectedBeans(clazz);
+		for (Object injectedBean : injectedBeans) {
+			Class<?> beanClass = getBeanClass(injectedBean);
+			inject(injectedBean, instantiateClass(beanClass), beanFactory);
+		}
+	}
 	
 	abstract public Set<?> getInjectedBeans(Class<?> clazz);
 	
-	abstract public Class<?> getBeanClass(Object bean);
-	
-	public Object instantiateClass(Class<?> clazz) {
-        Object bean = beanFactory.getBean(clazz);
+	abstract public Class<?> getBeanClass(Object injectedBean);
+
+	abstract public void inject(Object injectedBean, Object bean, BeanFactory beanFactory);
+
+	private Object instantiateClass(Class<?> clazz) {
+		Class<?> concreteClass = BeanFactoryUtils.findConcreteClass(clazz, beanFactory.getPreInstanticateBeans());
+        Object bean = beanFactory.getBean(concreteClass);
         if (bean != null) {
             return bean;
         }
         
-        Constructor<?> injectedConstructor = BeanFactoryUtils.getInjectedConstructor(clazz);
-        if (injectedConstructor != null) {
-        	logger.debug("Constructor : {}", injectedConstructor);
-            bean = instantiateConstructor(injectedConstructor);
-            beanFactory.registerBean(clazz, bean);
+        Constructor<?> injectedConstructor = BeanFactoryUtils.getInjectedConstructor(concreteClass);
+        if (injectedConstructor == null) {
+            bean = BeanUtils.instantiate(concreteClass);
+            beanFactory.registerBean(concreteClass, bean);
+            return bean;
         }
-
+        
+        logger.debug("Constructor : {}", injectedConstructor);
+        bean = instantiateConstructor(injectedConstructor);
+        beanFactory.registerBean(concreteClass, bean);
         return bean;
     }
 
-	public Object instantiateConstructor(Constructor<?> constructor) {
+	private Object instantiateConstructor(Constructor<?> constructor) {
         Class<?>[] pTypes = constructor.getParameterTypes();
         List<Object> args = Lists.newArrayList();
         for (Class<?> clazz : pTypes) {
