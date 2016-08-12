@@ -23,9 +23,9 @@ public class BeanFactoryTest {
 
 	@Before
 	public void setup() {
-		BeanScanner scanner = new BeanScanner("core.di.factory.example");
-		Set<Class<?>> preInstanticateClazz = scanner.scan();
-		beanFactory = new BeanFactory(preInstanticateClazz);
+		beanFactory = new BeanFactory();
+		ClasspathBeanDefinitionScanner scanner = new ClasspathBeanDefinitionScanner(beanFactory);
+		scanner.doScan();
 		beanFactory.initialize();
 	}
 
@@ -56,15 +56,6 @@ public class BeanFactoryTest {
 		assertNotNull(userController.getUserService());
 	}
 
-	@Test
-	public void getControllers() throws Exception {
-		Map<Class<?>, Object> controllers = beanFactory.getControllers();
-		Set<Class<?>> keys = controllers.keySet();
-		for (Class<?> clazz : keys) {
-			log.debug("Bean : {}", clazz);
-		}
-	}
-	
 	@After
 	public void tearDown() {
 		beanFactory.clear();
