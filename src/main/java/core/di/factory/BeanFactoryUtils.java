@@ -8,14 +8,21 @@ import static org.reflections.ReflectionUtils.withReturnType;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
 
+import core.annotation.Bean;
 import core.annotation.Inject;
 
 public class BeanFactoryUtils {
+	@SuppressWarnings({ "unchecked" })
+	public static Set<Method> getBeanMethods(Class<?> annotatedClass, Class<Bean> class1) {
+		return getAllMethods(annotatedClass, withAnnotation(class1));
+	}
 	@SuppressWarnings({ "unchecked" })
 	public static Set<Method> getInjectedMethods(Class<?> clazz) {
 		return getAllMethods(clazz, withAnnotation(Inject.class), withReturnType(void.class));
@@ -68,5 +75,17 @@ public class BeanFactoryUtils {
 		}
 		
 		throw new IllegalStateException(injectedClazz + "인터페이스를 구현하는 Bean이 존재하지 않는다.");
+	}
+	public static Optional<Object> invokeMethod(Method method, Object bean, Object[] args) {
+		try {
+			return Optional.ofNullable(method.invoke(bean, args));
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
